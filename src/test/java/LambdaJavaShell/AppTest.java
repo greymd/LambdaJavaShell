@@ -9,6 +9,6 @@ import static org.junit.Assert.*;
 public class AppTest {
     @Test public void testRunCmd() {
         App app = new App();
-        assertEquals("test\n", app.runCmd("echo test"));
+        assertEquals("dGVzdAo=", app.runCmd("echo test"));
     }
 }

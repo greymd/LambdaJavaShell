@@ -6,18 +6,22 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Base64;
 import java.util.Map;
 
 public class App implements RequestHandler<Map<String,Object>, String> {
     private Context context = null;
 
     public static void main(String[] args) {
-        System.out.println("Call it from Lambda function");
+        String decoded = new String(Base64.getDecoder().decode(args[0].getBytes()));
+        System.out.println(new App().runCmd(decoded));
     }
 
     @Override
     public String handleRequest(Map<String,Object> input, Context context) {
-        return runCmd(input.get("command").toString());
+        String cmd = input.get("command").toString();
+        String decoded = new String(Base64.getDecoder().decode(cmd.getBytes()));
+        return runCmd(decoded);
     }
 
     public String runCmd(String cmd) {
@@ -35,7 +39,7 @@ public class App implements RequestHandler<Map<String,Object>, String> {
             }
             int exitVal = process.waitFor();
             System.out.println("Exit status: " + exitVal);
-            return output.toString();
+            return Base64.getEncoder().encodeToString(output.toString().getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
